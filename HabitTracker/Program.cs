@@ -45,6 +45,9 @@ namespace HabitTracker
                             case 2:
                                 InsertData(sqlConnection);
                                 break;
+                            case 3:
+                                DeleteData(sqlConnection);
+                                break;
                             case 4:
                                 UpdateData(sqlConnection);
                                 break;
@@ -55,7 +58,6 @@ namespace HabitTracker
                 }
             }
         }
-
 
         static SqliteConnection CreateConnection()
         {
@@ -70,6 +72,49 @@ namespace HabitTracker
             return sqlite_conn;
         }
 
+        static void DeleteData(SqliteConnection conn)
+        {
+            string output = "";
+            string query = "";
+
+            using (SqliteCommand sqlCommand = ReturnCommand(conn, "SELECT * FROM HabitTracker"))
+            {
+                using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                {
+                    do
+                    {
+                        Console.WriteLine("\nHabits:");
+                        while (sqlDataReader.Read())
+                        {
+                            Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
+                        }
+
+                        Console.WriteLine("Type record to delete: ");
+                        output = Console.ReadLine().ToLower();
+                    } while (string.IsNullOrEmpty(output));
+
+                    if (output == "all")
+                    {
+                        query = "DELETE FROM HabitTracker";
+                    }
+                    else
+                    {
+                        query = $"DELETE FROM HabitTracker WHERE Habit = '{output}'";
+                    }
+                }
+            }
+
+            // Query user input and delete habit(s)
+            using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
+            {
+                using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                {
+                    Console.WriteLine("delete complete");
+                }
+            }
+            Console.Write("Press any key to continue: ");
+            Console.ReadLine();
+        }
 
         static void UpdateData(SqliteConnection conn)
         {
@@ -83,7 +128,7 @@ namespace HabitTracker
 
                     do
                     {
-                        Console.WriteLine("Select from the following:");
+                        Console.WriteLine("\nHabits:");
                         while (sqlDataReader.Read())
                         {
                             Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
@@ -99,7 +144,7 @@ namespace HabitTracker
             }
 
             // Query user input and update habit
-            using (SqliteCommand sqlCommand = ReturnCommand(conn, "UPDATE HabitTracker SET Quantity = Quantity + 1 WHERE Habit = 'Pushups'"))
+            using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
             {
                 using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
                 {
@@ -113,13 +158,14 @@ namespace HabitTracker
         static void InsertData(SqliteConnection conn)
         {
             string output = "";
+            Console.WriteLine("");
             do
             {
                 Console.Write("Create new habit: ");
                 output = Console.ReadLine();
             } while (string.IsNullOrEmpty(output));
 
-            string query = $"INSERT INTO HabitTracker Values (@Id, '{output}', 1);";
+            string query = $"INSERT INTO HabitTracker (Habit, Quantity) Values ('{output}', 1)";
 
             // Query user input and create new habit
             using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
@@ -140,6 +186,7 @@ namespace HabitTracker
             SqliteCommand sqlCommand = ReturnCommand(conn, "SELECT * FROM HabitTracker");
             sqlDataReader = sqlCommand.ExecuteReader();
 
+            Console.WriteLine("\nHabits:");
             while (sqlDataReader.Read())
             {
                 Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}: {sqlDataReader[2]}");

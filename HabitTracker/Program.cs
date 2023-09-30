@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.Sqlite;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // Habit Tracker Console App that utilizes SQLite
 // User can view, insert, update and delete records
@@ -25,6 +24,7 @@ namespace HabitTracker
             {
                 do
                 {
+                    Console.Clear();
                     Console.WriteLine("HABIT TRACKER\n\nMAIN MENU\n");
                     Console.WriteLine("0 - Close Application");
                     Console.WriteLine("1 - View All Records");
@@ -49,10 +49,6 @@ namespace HabitTracker
                         default:
                             break;
                     }
-
-
-
-
                 } while (output < 0 || output > 4);
             }
         }
@@ -78,10 +74,10 @@ namespace HabitTracker
 
             SqliteCommand sqlite_cmd;
 
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "";
+            //sqlite_cmd = conn.CreateCommand();
+            //sqlite_cmd.CommandText = "";
 
-            sqlite_cmd.ExecuteNonQuery();
+            //sqlite_cmd.ExecuteNonQuery();
 
             //conn.Close();
         }
@@ -91,16 +87,6 @@ namespace HabitTracker
             SqliteCommand sqlite_cmd;
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = "INSERT INTO SampleTable(Col1, Col2) VALUES('Test Text ', 1); ";
-            sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable(Col1, Col2) VALUES('Test1 Text1 ', 2); ";
-            sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable(Col1, Col2) VALUES('Test2 Text2 ', 3); ";
-            sqlite_cmd.ExecuteNonQuery();
-
-
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable1(Col1, Col2) VALUES('Test3 Text3 ', 3); ";
-            sqlite_cmd.ExecuteNonQuery();
-
         }
 
         static void ReadDB(SqliteConnection conn)
@@ -108,14 +94,18 @@ namespace HabitTracker
             SqliteDataReader sqlite_datareader;
             SqliteCommand sqlite_cmd;
             sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT * FROM SampleTable";
+            sqlite_cmd.CommandText = "SELECT * FROM HabitTracker";
 
             sqlite_datareader = sqlite_cmd.ExecuteReader();
+
             while (sqlite_datareader.Read())
             {
-                string myreader = sqlite_datareader.GetString(0);
-                Console.WriteLine(myreader);
+                Console.WriteLine($"{sqlite_datareader[0]}: {sqlite_datareader[1]}: {sqlite_datareader[2]}");
             }
+
+            Console.Write("Press any key to continue: ");
+            Console.ReadLine();
+
             conn.Close();
         }
     }

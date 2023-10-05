@@ -81,15 +81,16 @@ namespace HabitTracker
             {
                 using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
                 {
+                    Console.WriteLine("\nHabits:");
+
+                    while (sqlDataReader.Read())
+                    {
+                        Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
+                    }
+
                     do
                     {
-                        Console.WriteLine("\nHabits:");
-                        while (sqlDataReader.Read())
-                        {
-                            Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
-                        }
-
-                        Console.WriteLine("Type record to delete: ");
+                        Console.Write("Type habit name to delete ('all' to delete all): ");
                         output = Console.ReadLine().ToLower();
                     } while (string.IsNullOrEmpty(output));
 
@@ -125,21 +126,28 @@ namespace HabitTracker
                 using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
                 {
                     string output = "";
+                    int quantity = 0;
+
+                    Console.WriteLine("\nHabits:");
+                    while (sqlDataReader.Read())
+                    {
+                        Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
+                    }
 
                     do
                     {
-                        Console.WriteLine("\nHabits:");
-                        while (sqlDataReader.Read())
-                        {
-                            Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}");
-                        }
-
-                        Console.Write("Type your habit: ");
+                        Console.Write("Type habit to update: ");
                         output = Console.ReadLine();
 
                     } while (string.IsNullOrEmpty(output));
 
-                    query = $"UPDATE HabitTracker SET Quantity = Quantity + 1 WHERE Habit='{output}'";
+                    do
+                    {
+                        Console.Write("\nEnter quantity to update by: ");
+                        int.TryParse(Console.ReadLine(), out quantity);
+                    } while (quantity < 1);
+
+                    query = $"UPDATE HabitTracker SET Quantity = Quantity + {quantity} WHERE Habit='{output}'";
                 }
             }
 
@@ -158,14 +166,21 @@ namespace HabitTracker
         static void InsertData(SqliteConnection conn)
         {
             string output = "";
-            Console.WriteLine("");
+            int quantity = 0;
+
             do
             {
-                Console.Write("Create new habit: ");
+                Console.Write("\nCreate new habit: ");
                 output = Console.ReadLine();
             } while (string.IsNullOrEmpty(output));
 
-            string query = $"INSERT INTO HabitTracker (Habit, Quantity) Values ('{output}', 1)";
+            do
+            {
+                Console.Write("\nEnter quantity: ");
+                 int.TryParse(Console.ReadLine(), out quantity);
+            } while (quantity < 1);
+
+            string query = $"INSERT INTO HabitTracker (Habit, Quantity) Values ('{output}', {quantity})";
 
             // Query user input and create new habit
             using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
@@ -199,7 +214,6 @@ namespace HabitTracker
 
         static SqliteCommand ReturnCommand(SqliteConnection conn, string query)
         {
-            SqliteDataReader sqlDataReader;
             SqliteCommand sqlCommand;
             sqlCommand = conn.CreateCommand();
             sqlCommand.CommandText = query;

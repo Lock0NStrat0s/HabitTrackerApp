@@ -2,7 +2,7 @@
   "profiles": {
     "HabitTracker": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\moham\\Documents\\C#_Academy\\ConsoleApps\\Habit_Tracker\\HabitTrackerApp"
+      "workingDirectory": "C:\\\\Users\\\\moham\\\\Documents\\\\Programming\\\\CodeReview\\\\HabitTrackerApp"
     }
   }
 }

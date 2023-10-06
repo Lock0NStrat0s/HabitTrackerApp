@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using static System.Net.Mime.MediaTypeNames;
 
 // Habit Tracker Console App that utilizes SQLite
 // User can view, insert, update and delete records
@@ -77,16 +78,16 @@ namespace HabitTracker
 
         static void CreateTable(SqliteConnection conn)
         {
-            string query = "CREATE TABLE IF NOT EXISTS HabitTracker" +
-                "(Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "Habit TEXT NOT NULL," +
-                "Quantity INTEGER NOT NULL)";
+            string query = "CREATE TABLE IF NOT EXISTS 'HabitTracker' (" +
+                            "'Id' INTEGER NOT NULL," +
+	                        "'Habit' TEXT NOT NULL," +
+	                        "'Quantity' INTEGER NOT NULL," +
+	                        "PRIMARY KEY('Id' AUTOINCREMENT))";
 
             using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
             {
                 using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
                 {
-
                 }
             }
         }

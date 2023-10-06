@@ -19,20 +19,23 @@ namespace HabitTracker
                 int output;
                 bool runApp = true;
 
+                CreateTable(sqlConnection);
+
                 while (runApp)
                 {
                     do
                     {
-                        Console.Clear();
-                        Console.WriteLine("HABIT TRACKER\n\nMAIN MENU\n");
-                        Console.WriteLine("0 - Close Application");
-                        Console.WriteLine("1 - View All Records");
-                        Console.WriteLine("2 - INSERT Record");
-                        Console.WriteLine("3 - DELETE Record");
-                        Console.WriteLine("4 - UPDATE Record");
-                        Console.Write("Select from the following: ");
-
-                        int.TryParse(Console.ReadLine(), out output);
+                        do
+                        {
+                            Console.Clear();
+                            Console.WriteLine("HABIT TRACKER\n\nMAIN MENU\n");
+                            Console.WriteLine("0 - Close Application");
+                            Console.WriteLine("1 - View All Records");
+                            Console.WriteLine("2 - INSERT Record");
+                            Console.WriteLine("3 - DELETE Record");
+                            Console.WriteLine("4 - UPDATE Record");
+                            Console.Write("Select from the following: ");
+                        } while (!int.TryParse(Console.ReadLine(), out output));
 
                         switch (output)
                         {
@@ -70,6 +73,22 @@ namespace HabitTracker
             sqlite_conn.Open();
 
             return sqlite_conn;
+        }
+
+        static void CreateTable(SqliteConnection conn)
+        {
+            string query = "CREATE TABLE IF NOT EXISTS HabitTracker" +
+                "(Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "Habit TEXT NOT NULL," +
+                "Quantity INTEGER NOT NULL)";
+
+            using (SqliteCommand sqlCommand = ReturnCommand(conn, query))
+            {
+                using (SqliteDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                {
+
+                }
+            }
         }
 
         static void DeleteData(SqliteConnection conn)
@@ -177,7 +196,7 @@ namespace HabitTracker
             do
             {
                 Console.Write("\nEnter quantity: ");
-                 int.TryParse(Console.ReadLine(), out quantity);
+                int.TryParse(Console.ReadLine(), out quantity);
             } while (quantity < 1);
 
             string query = $"INSERT INTO HabitTracker (Habit, Quantity) Values ('{output}', {quantity})";
@@ -198,18 +217,21 @@ namespace HabitTracker
         static void ReadDB(SqliteConnection conn)
         {
             SqliteDataReader sqlDataReader;
-            SqliteCommand sqlCommand = ReturnCommand(conn, "SELECT * FROM HabitTracker");
-            sqlDataReader = sqlCommand.ExecuteReader();
-
-            Console.WriteLine("\nHabits:");
-            while (sqlDataReader.Read())
+            using (SqliteCommand sqlCommand = ReturnCommand(conn, "SELECT * FROM HabitTracker"))
             {
-                Console.WriteLine($"{sqlDataReader[0]}: {sqlDataReader[1]}: {sqlDataReader[2]}");
+                using (sqlDataReader = sqlCommand.ExecuteReader())
+                {
+                    Console.WriteLine("\nHabits:");
+                    int i = 0;
+                    while (sqlDataReader.Read())
+                    {
+                        Console.WriteLine($"{++i}: {sqlDataReader[1]}: {sqlDataReader[2]}");
+                    }
+                }
             }
 
             Console.Write("Press any key to continue: ");
             Console.ReadLine();
-
         }
 
         static SqliteCommand ReturnCommand(SqliteConnection conn, string query)
